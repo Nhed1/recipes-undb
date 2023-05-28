@@ -6,8 +6,21 @@ const app = express();
 const prisma = new PrismaClient();
 
 app.get("/recipes", async (req, res) => {
+  const { diabeteLevel } = req.query;
+
   try {
-    const recipes = await prisma.recipe.findMany();
+    let recipes;
+
+    if (diabeteLevel) {
+      recipes = await prisma.recipe.findMany({
+        where: {
+          diabeteLevel: diabeteLevel,
+        },
+      });
+    } else {
+      recipes = await prisma.recipe.findMany();
+    }
+
     res.json(recipes);
   } catch (error) {
     console.error("Error retrieving recipes:", error);
