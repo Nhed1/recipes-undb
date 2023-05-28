@@ -5,6 +5,8 @@ const app = express();
 
 const prisma = new PrismaClient();
 
+app.use("/uploads", express.static("uploads"));
+
 app.get("/recipes", async (req, res) => {
   const { diabeteLevel } = req.query;
 

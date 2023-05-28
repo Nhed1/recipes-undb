@@ -16,4 +16,5 @@ model Recipe {
   diabetesLevel Int
   ingredients   String
   description   String
+   image        Bytes?  
 }
