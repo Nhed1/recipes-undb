@@ -1,0 +1,3 @@
+
+how to run database local:
+// docker run --name recipes-undb -P -e MYSQL_ROOT_PASSWORD=123 -d mysql
