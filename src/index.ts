@@ -1,5 +1,8 @@
 import { PrismaClient } from "@prisma/client";
 import express from "express";
+import multer from "multer";
+
+const upload = multer({ dest: "uploads/" });
 
 const app = express();
 
@@ -8,15 +11,15 @@ const prisma = new PrismaClient();
 app.use("/uploads", express.static("uploads"));
 
 app.get("/recipes", async (req, res) => {
-  const { diabeteLevel } = req.query;
+  const { diabetesLevel } = req.query;
 
   try {
     let recipes;
 
-    if (diabeteLevel) {
+    if (diabetesLevel) {
       recipes = await prisma.recipe.findMany({
         where: {
-          diabeteLevel: diabeteLevel,
+          diabetesLevel: Number(diabetesLevel),
         },
       });
     } else {
@@ -51,4 +54,29 @@ app.get("/recipes/:id", async (req, res) => {
 
 app.listen(3000, () => {
   console.log("Server is running on port 3000");
+});
+
+app.post("/recipes", upload.single("image"), async (req, res) => {
+  console.log(req.file);
+  const { diabetesLevel, name, ingredients, description } = req.body;
+
+  const diabeteLevelNumber = Number(diabetesLevel);
+  try {
+    const image = req.file;
+
+    const recipe = await prisma.recipe.create({
+      data: {
+        diabetesLevel: diabeteLevelNumber,
+        name,
+        ingredients,
+        description,
+        image: Buffer.from(image.buffer),
+      },
+    });
+
+    res.json(recipe);
+  } catch (error) {
+    console.error("Error creating recipe:", error);
+    res.status(500).send("An error occurred while creating the recipe.");
+  }
 });
